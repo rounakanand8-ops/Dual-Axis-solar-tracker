@@ -1,0 +1,63 @@
+ #include <Servo.h>
+
+Servo servohori;   // horizontal servo (bottom)
+Servo servoverti;  // vertical servo (top)
+
+int servoh = 90;
+int servov = 90;
+
+int servohLimitHigh = 180;
+int servohLimitLow  = 10;
+int servovLimitHigh = 180;
+int servovLimitLow  = 10;
+
+int ldrtopr = A1;
+int ldrtopl = A2;
+int ldrbotr = A0;
+int ldrbotl = A3;
+
+void setup()
+{
+  servohori.attach(10);
+  servoverti.attach(9);
+
+  servohori.write(servoh);
+  servoverti.write(servov);
+
+  delay(500);
+}
+
+void loop()
+{
+  int topl = analogRead(ldrtopl);
+  int topr = analogRead(ldrtopr);
+  int botl = analogRead(ldrbotl);
+  int botr = analogRead(ldrbotr);
+
+  int avgtop    = (topl + topr) / 2;
+  int avgbot    = (botl + botr) / 2;
+  int avgleft   = (topl + botl) / 2;
+  int avgright  = (topr + botr) / 2;
+
+  // ----- Vertical movement -----
+  if (avgtop < avgbot)
+    servov--;
+  else if (avgbot < avgtop)
+    servov++;
+
+  servov = constrain(servov, servovLimitLow, servovLimitHigh);
+  servoverti.write(servov);
+
+  // ----- Horizontal movement -----
+  if (avgleft > avgright)
+    servoh--;
+  else if (avgright > avgleft)
+    servoh++;
+
+  servoh = constrain(servoh, servohLimitLow, servohLimitHigh);
+  servohori.write(servoh);
+
+  delay(20);
+}
+
+ 
